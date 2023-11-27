@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<!--
+----------------------------------------------------------------------------
+ "THE BEER-WARE LICENSE" (Revision 42):
+ Gael Pasgrimaud <gael@gawel.org> wrote this file. As long as you retain this
+ notice you can do whatever you want with this stuff. If we meet some day, and
+ you think this stuff is worth it, you can buy me a beer in return Poul-Henning
+ Kamp
+----------------------------------------------------------------------------
+-->
+<html>
+  <title>Calculette Coop'in</title>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <body>
+    <link rel="stylesheet" href="./bootstrap.min.css" />
+    <script src="./vue.global.prod.js"></script>
+
+    <div id="app" class="container">
+      <form @submit.prevent>
+      <fieldset>
+        <legend>Saisie de vos achats</legend>
+        <div class="form-text">Saississez ci-dessous vos achats. Pour les achats au poid, laisser la quantité à 1</div>
+        <div>
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>Prix</th>
+                <th>Quantité</th>
+              </tr>
+            </thead>
+            <tr v-for="i in products.length">
+              <td>
+                <input type="number"
+                       class="form-control"
+                       placeholder="prix"
+                       v-model="products[i-1].price"
+                       @keydown.enter="focusNext"
+                       size="7"
+                       required
+                       />
+              </td>
+              <td>
+                <input type="number"
+                       class="form-control"
+                       placeholder="quantite"
+                       v-model="products[i-1].quantity"
+                       @keydown.enter="focusNext"
+                       size="5"
+                       required
+                       />
+              </td>
+            </tr>
+          </table>
+        </div>
+        <div>
+          <input type="button"
+            class="btn btn-secondary"
+            @click.prevent="addProducts(products)"
+            value="Ajouter des lignes de produits"
+            />
+        </div>
+      </fieldset>
+      <div>&nbsp;</div>
+      <fieldset>
+        <legend>Remplissage de vôtre fiche</legend>
+        <div>
+          <table class="table">
+            <tr>
+              <td>
+                <div class="form-floating">
+                  <input type="number"
+                         class="form-control"
+                         :class="solde === '' ? 'is-invalid': ''"
+                         placeholder="Solde actuel"
+                         v-model="solde"
+                         size="9"
+                         id="solde"
+                         />
+                  <label for="solde">Solde actuel</label>
+                  <div class="form-text">Saississez le montant de votre solde actuel</div>
+                </div>
+                <div>&nbsp;</div>
+                <div class="form-floating">
+                  <input type="number"
+                         class="form-control"
+                         placeholder="montant du dépot"
+                         size="9"
+                         v-model="deposite"
+                         id="deposite"
+                         />
+                  <label for="deposite">Montant du dépot</label>
+                  <div class="form-text">Saississez le montant de votre dépot (facultatif)</div>
+              </td>
+            </tr>
+          </table>
+        </div>
+        <div class="alert alert-danger" v-show="alert_solde">
+          Attention, vôtre solde est en dessous de 50€. Pensez à faire un dépot.
+        </div>
+        <div>
+          <table class="table">
+            <tr>
+              <th>Date</th>
+              <th>Achats</th>
+              <th>Solde</th>
+            </tr>
+            <tr>
+              <td>
+                <input type="text"
+                       class="form-control"
+                       disabled
+                       size="9"
+                       :value="now.toLocaleDateString()" />
+              </td>
+              <td>
+                <input type="text"
+                       class="form-control"
+                       disabled
+                       size="9"
+                       :value="product_prices" />
+              </td>
+              <td>
+                <input type="text"
+                       class="form-control"
+                       disabled
+                       size="9"
+                       :class="alert_solde ? 'is-invalid': 'is-valid'"
+                       :value="getNewSolde(products)" />
+              </td>
+            </tr>
+          </table>
+        </div>
+      </fieldset>
+      </form>
+      <p class="text-center small">
+      Cette calculette est un logiciel libre sous licence
+      <a href="https://fr.wikipedia.org/wiki/Beerware">Beerware</a>.
+      Il est propulsé par <a href="https://vuejs.org/">Vue.js</a>
+      et <a href="https://getbootstrap.com/">Bootstrap</a>.
+      Le code source est disponible sur
+      <a href="https://github.com/gawel/calculette_coopin">Github</a>.
+      </p>
+    </div>
+
+    <script>
+      const { createApp } = Vue
+
+      createApp({
+        data() {
+          return {
+            now: new Date(),
+            products: [
+              {price: "", quantity: 1},
+              {price: "", quantity: 1},
+              {price: "", quantity: 1},
+              {price: "", quantity: 1}
+            ],
+            product_prices: 0,
+            solde: "",
+            new_solde: 0,
+            alert_solde: false,
+            deposite: "",
+          }
+        },
+        methods: {
+            addProducts(products) {
+              products.push({price: "", quantity: 1})
+              products.push({price: "", quantity: 1})
+              products.push({price: "", quantity: 1})
+              products.push({price: "", quantity: 1})
+            },
+            getNewSolde (products) {
+              var s = 0;
+              products.forEach((item) => {
+                if (item.price && item.quantity) {
+                  s += parseFloat(item.quantity) * parseFloat(item.price)
+                }
+              })
+              this.product_prices = s.toFixed(2)
+              var solde = this.solde === "" ? 0: parseFloat(this.solde);
+              var deposite = this.deposite === "" ? 0: parseFloat(this.deposite);
+              this.new_solde = (solde + deposite - s).toFixed(2)
+              if (this.solde !== "") { 
+                if (solde < 50 || this.new_solde < 50) {
+                  this.alert_solde = true
+                } else {
+                  this.alert_solde = false
+                }
+              }
+              return this.new_solde
+            },
+            focusNext(e) {
+              const inputs = Array.from(e.target.form.querySelectorAll('input[type="number"]'));
+              const index = inputs.indexOf(e.target);
+
+              if (index < inputs.length) {
+                inputs[index + 1].focus();
+              }
+            }
+        }
+      }).mount('#app')
+    </script>
+  </body>
+</html>
