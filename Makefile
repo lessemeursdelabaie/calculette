@@ -8,3 +8,6 @@ qr:
 	python3 -m venv venv
 	venv/bin/pip install -U qrcode[pil]
 	venv/bin/qr https://lessemeursdelabaie.github.io/calculette/ > calculette.png
+
+push:
+	git push git push git@github.com:lessemeursdelabaie/calculette.git main
