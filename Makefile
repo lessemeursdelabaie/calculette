@@ -6,10 +6,10 @@ venv:
 	python3 -m venv venv
 	venv/bin/pip install -U qrcode[pil] pytest-playwright
 
-qr:
+qr: venv
 	venv/bin/qr $(URL) > qrcode.png
 
-screenshot:
+screenshot: venv
 	venv/bin/playwright install firefox
 	venv/bin/playwright screenshot \
 		--browser firefox $(URL)/ \
