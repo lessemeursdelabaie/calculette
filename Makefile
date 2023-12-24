@@ -10,4 +10,4 @@ qr:
 	venv/bin/qr https://lessemeursdelabaie.github.io/calculette/ > calculette.png
 
 push:
-	git push git push git@github.com:lessemeursdelabaie/calculette.git main
+	git push git@github.com:lessemeursdelabaie/calculette.git main
