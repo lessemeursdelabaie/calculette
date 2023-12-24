@@ -1,13 +1,20 @@
+URL=https://lessemeursdelabaie.github.io/calculette
 serve:
 	python3 -m http.server
 
-pub:
-	rsync -Pva index.html *.js *.css $(dest)
+venv:
+	python3 -m venv venv
+	venv/bin/pip install -U qrcode[pil] pytest-playwright
 
 qr:
-	python3 -m venv venv
-	venv/bin/pip install -U qrcode[pil]
-	venv/bin/qr https://lessemeursdelabaie.github.io/calculette/ > calculette.png
+	venv/bin/qr $(URL) > qrcode.png
+
+screenshot:
+	venv/bin/playwright install firefox
+	venv/bin/playwright screenshot --browser firefox $(URL)/ calculette.png
+
+pdf: qr screenshot
+	wkhtmltopdf $(URL)/affichette.html affichette.pdf
 
 push:
 	git push git@github.com:lessemeursdelabaie/calculette.git main
