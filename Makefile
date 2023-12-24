@@ -1,4 +1,4 @@
-URL=https://lessemeursdelabaie.github.io/calculette
+URL?=https://lessemeursdelabaie.github.io/calculette
 serve:
 	python3 -m http.server
 
@@ -11,7 +11,10 @@ qr:
 
 screenshot:
 	venv/bin/playwright install firefox
-	venv/bin/playwright screenshot --browser firefox $(URL)/ calculette.png
+	venv/bin/playwright screenshot \
+		--browser firefox $(URL)/ \
+		--full-page \
+		calculette.png
 
 pdf: qr screenshot
 	wkhtmltopdf $(URL)/affichette.html affichette.pdf
