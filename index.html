@@ -98,7 +98,7 @@
           </table>
         </div>
         <div class="alert alert-danger" v-show="alert_solde">
-          Attention, vôtre solde est en dessous de 50€. Pensez à faire un dépot.
+          Attention, vôtre solde est en dessous de 60€. Pensez à faire un dépot.
         </div>
         <div>
           <table class="table">
@@ -183,8 +183,8 @@
               var solde = this.solde === "" ? 0: parseFloat(this.solde);
               var deposite = this.deposite === "" ? 0: parseFloat(this.deposite);
               this.new_solde = (solde + deposite - s).toFixed(2)
-              if (this.solde !== "") { 
-                if (solde < 50 || this.new_solde < 50) {
+              if (this.solde !== "") {
+                if (solde < 60 || this.new_solde < 60) {
                   this.alert_solde = true
                 } else {
                   this.alert_solde = false
