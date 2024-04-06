@@ -184,7 +184,7 @@
               var deposite = this.deposite === "" ? 0: parseFloat(this.deposite);
               this.new_solde = (solde + deposite - s).toFixed(2)
               if (this.solde !== "") {
-                if (solde < 60 || this.new_solde < 60) {
+                if (this.new_solde < 60) {
                   this.alert_solde = true
                 } else {
                   this.alert_solde = false
